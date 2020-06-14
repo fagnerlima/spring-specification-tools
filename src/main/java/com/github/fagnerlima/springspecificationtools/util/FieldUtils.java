@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.springspecificationtools.util;
+package com.github.fagnerlima.springspecificationtools.util;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;

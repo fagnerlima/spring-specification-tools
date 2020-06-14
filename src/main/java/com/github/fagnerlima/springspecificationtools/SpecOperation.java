@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.springspecificationtools;
+package com.github.fagnerlima.springspecificationtools;
 
 public enum SpecOperation {
 

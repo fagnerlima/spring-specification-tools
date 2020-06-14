@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.springspecificationtools.annotation;
+package com.github.fagnerlima.springspecificationtools.annotation;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;

@@ -1,16 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>br.pro.fagnerlima</groupId>
+  <groupId>com.github.fagnerlima</groupId>
   <artifactId>spring-specification-tools</artifactId>
   <version>0.1.0-alpha</version>
   <name>spring-specification-tools</name>
+  <url>http://maven.apache.org</url>
 
   <properties>
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.source>11</maven.compiler.source>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <apache-commons-lang3.version>3.10</apache-commons-lang3.version>
     <javax-persistence-api.version>2.2</javax-persistence-api.version>
+    <junit-jupiter-api.version>5.6.2</junit-jupiter-api.version>
     <spring-framework.version>2.3.1.RELEASE</spring-framework.version>
   </properties>
 
@@ -29,6 +32,13 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>${apache-commons-lang3.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit-jupiter-api.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

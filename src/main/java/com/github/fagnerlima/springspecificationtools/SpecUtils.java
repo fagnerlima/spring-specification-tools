@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.springspecificationtools;
+package com.github.fagnerlima.springspecificationtools;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -6,10 +6,10 @@ import java.util.List;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
-import br.pro.fagnerlima.springspecificationtools.annotation.SpecBetween;
-import br.pro.fagnerlima.springspecificationtools.annotation.SpecField;
-import br.pro.fagnerlima.springspecificationtools.util.FieldUtils;
-import br.pro.fagnerlima.springspecificationtools.util.StringUtils;
+import com.github.fagnerlima.springspecificationtools.annotation.SpecBetween;
+import com.github.fagnerlima.springspecificationtools.annotation.SpecField;
+import com.github.fagnerlima.springspecificationtools.util.FieldUtils;
+import com.github.fagnerlima.springspecificationtools.util.StringUtils;
 
 public class SpecUtils {
 

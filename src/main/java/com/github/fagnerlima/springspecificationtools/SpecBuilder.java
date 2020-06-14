@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.springspecificationtools;
+package com.github.fagnerlima.springspecificationtools;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -8,15 +8,15 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import br.pro.fagnerlima.springspecificationtools.annotation.SpecBetween;
-import br.pro.fagnerlima.springspecificationtools.annotation.SpecEntity;
-import br.pro.fagnerlima.springspecificationtools.annotation.SpecField;
-import br.pro.fagnerlima.springspecificationtools.annotation.SpecGroup;
-import br.pro.fagnerlima.springspecificationtools.annotation.SpecJoin;
-import br.pro.fagnerlima.springspecificationtools.annotation.SpecPeriod;
-import br.pro.fagnerlima.springspecificationtools.annotation.SpecPeriodEndDate;
-import br.pro.fagnerlima.springspecificationtools.annotation.SpecPeriodStartDate;
-import br.pro.fagnerlima.springspecificationtools.util.FieldUtils;
+import com.github.fagnerlima.springspecificationtools.annotation.SpecBetween;
+import com.github.fagnerlima.springspecificationtools.annotation.SpecEntity;
+import com.github.fagnerlima.springspecificationtools.annotation.SpecField;
+import com.github.fagnerlima.springspecificationtools.annotation.SpecGroup;
+import com.github.fagnerlima.springspecificationtools.annotation.SpecJoin;
+import com.github.fagnerlima.springspecificationtools.annotation.SpecPeriod;
+import com.github.fagnerlima.springspecificationtools.annotation.SpecPeriodEndDate;
+import com.github.fagnerlima.springspecificationtools.annotation.SpecPeriodStartDate;
+import com.github.fagnerlima.springspecificationtools.util.FieldUtils;
 
 public class SpecBuilder<T> {
 

@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.springspecificationtools;
+package com.github.fagnerlima.springspecificationtools;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -12,8 +12,8 @@ import javax.persistence.criteria.Path;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import br.pro.fagnerlima.springspecificationtools.util.DateUtils;
-import br.pro.fagnerlima.springspecificationtools.util.StringUtils;
+import com.github.fagnerlima.springspecificationtools.util.DateUtils;
+import com.github.fagnerlima.springspecificationtools.util.StringUtils;
 
 public class SpecFactory<T> {
 
