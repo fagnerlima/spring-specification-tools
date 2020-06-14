@@ -1,5 +1,6 @@
 package com.github.fagnerlima.springspecificationtools;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +16,14 @@ import org.springframework.data.jpa.domain.Specification;
 import com.github.fagnerlima.springspecificationtools.util.DateUtils;
 import com.github.fagnerlima.springspecificationtools.util.StringUtils;
 
-public class SpecFactory<T> {
+/**
+ * Used for create Specification objects.
+ * @author Fagner Lima
+ * @since 0.1.0
+ *
+ * @param <T> entity class
+ */
+public class SpecFactory<T extends Serializable> {
 
     private static final String POSTGRESQL_UNACCENT_FUNCTION = "unaccent";
 

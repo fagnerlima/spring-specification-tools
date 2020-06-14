@@ -6,6 +6,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Used for indicate the end date field.
+ * @author Fagner Lima
+ * @since 0.1.0
+ */
 @Retention(RUNTIME)
 @Target(FIELD)
 public @interface SpecPeriodEndDate {

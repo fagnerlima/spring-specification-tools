@@ -1,5 +1,6 @@
 package com.github.fagnerlima.springspecificationtools;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
@@ -18,15 +19,31 @@ import com.github.fagnerlima.springspecificationtools.annotation.SpecPeriodEndDa
 import com.github.fagnerlima.springspecificationtools.annotation.SpecPeriodStartDate;
 import com.github.fagnerlima.springspecificationtools.util.FieldUtils;
 
-public class SpecBuilder<T> {
+/**
+ * Used for build Specification objects.
+ * @author Fagner Lima
+ * @since 0.1.0
+ *
+ * @param <T> entity class
+ */
+public class SpecBuilder<T extends Serializable> {
 
     private List<Specification<T>> specs = new ArrayList<>();
     private SpecFactory<T> specFactory = new SpecFactory<>();
 
+    /**
+     * Clear the conditions
+     */
     public void clear() {
         specs = new ArrayList<>();
     }
 
+    /**
+     * Accept and Specification object.
+     *
+     * @param spec Specification object
+     * @return SpecBuilder instance
+     */
     public SpecBuilder<T> add(Specification<T> spec) {
         specs.add(spec);
 
@@ -46,10 +63,21 @@ public class SpecBuilder<T> {
         return add(filter, entityClass);
     }
 
+    /**
+     * Build the Specification using the AND {@code Operator}.
+     *
+     * @return the Specification
+     */
     public Specification<T> build() {
         return build(SpecOperator.AND);
     }
 
+    /**
+     * Build the Specification.
+     *
+     * @param operator the operator that will be used in the Specification
+     * @return the Specification
+     */
     public Specification<T> build(SpecOperator operator) {
         if (specs.isEmpty()) {
             return null;

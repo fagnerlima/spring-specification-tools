@@ -1,32 +1,44 @@
 package com.github.fagnerlima.springspecificationtools.util;
 
+/**
+ * Utils for String
+ * @author Fagner Lima
+ * @since 0.1.0
+ */
 public class StringUtils {
 
     /**
-     * Remove os acentos de uma string.
+     * Remove accents from {@code str}.
      *
-     * @param str string a ser manipulada
-     * @return string sem acentos
+     * <pre>
+     * StringUtils.stripAccents(null)      = null
+     * StringUtils.stripAccents("")        = ""
+     * StringUtils.stripAccents("control") = "control"
+     * StringUtils.stripAccents("éclair")  = "eclair"
+     * </pre>
+     *
+     * @param str string to be stripped
+     * @return string with accents removed
      */
     public static String unaccent(String str) {
         return org.apache.commons.lang3.StringUtils.stripAccents(str);
     }
 
     /**
-     * Verifica se a string é vazia ou nula.
+     * Check if the {@code str} is null or empty.
      *
-     * @param str string a ser verificada
-     * @return {@code true} se a string for vazia ou nula
+     * @param str string to be checked
+     * @return {@code true} if {@code str} is null or empty
      */
     public static Boolean isEmpty(String str) {
         return org.apache.commons.lang3.StringUtils.isEmpty(str);
     }
 
     /**
-     * Verifica se a string é vazia, nula ou se contém apenas espaços em branco.
+     * Check if the {@code str} is null, emtpty or whitespace only.
      *
-     * @param str string a ser verificada
-     * @return {@code true} se a string for vazia, nula ou se contiver apenas espaços em branco
+     * @param str string to be checked
+     * @return {@code true} if {@code str} is null, empty or whitespace only
      */
     public static Boolean isBlank(String str) {
         return org.apache.commons.lang3.StringUtils.isBlank(str);

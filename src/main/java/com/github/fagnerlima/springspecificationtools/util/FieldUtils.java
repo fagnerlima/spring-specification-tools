@@ -6,22 +6,20 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Utils for Fields with Reflection
+ * @author Fagner Lima
+ * @since 0.1.0
+ */
 public class FieldUtils {
 
-    @SuppressWarnings("unchecked")
-    public static Collection<Long> getLongValues(Object data, Field field) throws IllegalAccessException {
-        return (Collection<Long>) field.get(data);
-    }
-
     /**
-     * Retorna todos os campos da classe {@code type}, incluindo os campos de suas superclasses.
+     * Get all fields from {@code type}, including all fields from your superclass.
      *
-     * @param type classe alvo
-     * @return todos os campos da classe {@code type}
+     * @param type class type
+     * @return all fields from {@code type}
      */
     public static List<Field> getAllFields(Class<?> type) {
         List<Field> fields = new ArrayList<>();
@@ -34,48 +32,12 @@ public class FieldUtils {
     }
 
     /**
-     * Retorna todos os campos da classe {@code type}, incluindo os campos de suas superclasses,
-     * e excetuando os campos em {@code ignoreProperties}.
+     * Get the field from {@code type} annotated with {@code annotationClass}.
      *
-     * @param type classe alvo
-     * @return todos os campos da classe {@code type}
-     */
-    public static List<Field> getAllFields(Class<?> type, String ...ignoredProperties) {
-        List<Field> fields = getAllFields(type);
-
-        if (ignoredProperties == null || ignoredProperties.length == 0) {
-            return fields;
-        }
-
-        List<String> ignorePropertiesList = List.of(ignoredProperties);
-
-        return fields.stream()
-                .filter(f -> !ignorePropertiesList.contains(f.getName()))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Retorna o campo de nome {@code name} da classe {@code type}
-     *
-     * @param type classe alvo
-     * @param name nome do campo
-     * @return o campo de nome {@code name}
-     * @throws NoSuchFieldException
-     */
-    public static Field getField(Class<?> type, String name) throws NoSuchFieldException {
-        List<Field> fields = getAllFields(type);
-
-        return fields.stream().filter(field -> field.getName().equals(name)).findFirst()
-                .orElseThrow(() -> new NoSuchFieldException(name));
-    }
-
-    /**
-     * Retorna o campo anotado com {@code annotationClass} da classe {@code type}
-     *
-     * @param type classe alvo
-     * @param annotationClass annotation do campo
-     * @return o campo anotado com {@code annotationClass}
-     * @throws NoSuchFieldException
+     * @param type class type
+     * @param annotationClass annotation type
+     * @return the field annotated with {@code annotationClass}
+     * @throws NoSuchFieldException if the field is not found
      */
     public static Field getField(Class<?> type, Class<? extends Annotation> annotationClass) throws NoSuchFieldException {
         List<Field> fields = getAllFields(type);
@@ -84,12 +46,28 @@ public class FieldUtils {
                 .orElseThrow(() -> new NoSuchFieldException(annotationClass.getName()));
     }
 
+    /**
+     * Get the getter method of the field with name {@code propertyName} from {@code type}.
+     *
+     * @param propertyName property name
+     * @param type class type
+     * @return the getter method
+     * @throws IntrospectionException if an exception occurs during introspection
+     */
     public static Method findGetterMethod(String propertyName, Class<?> type) throws IntrospectionException {
         PropertyDescriptor propertyDescriptor = new PropertyDescriptor(propertyName, type);
 
         return propertyDescriptor.getReadMethod();
     }
 
+    /**
+     * Get the setter method of the field with name {@code propertyName} from {@code type}.
+     *
+     * @param propertyName property name
+     * @param type class type
+     * @return the setter method
+     * @throws IntrospectionException if an exception occurs during introspection
+     */
     public static Method findSetterMethod(String propertyName, Class<?> type) throws IntrospectionException {
         PropertyDescriptor propertyDescriptor = new PropertyDescriptor(propertyName, type);
 

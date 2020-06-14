@@ -11,6 +11,10 @@ import com.github.fagnerlima.springspecificationtools.annotation.SpecField;
 import com.github.fagnerlima.springspecificationtools.util.FieldUtils;
 import com.github.fagnerlima.springspecificationtools.util.StringUtils;
 
+/**
+ * @author Fagner Lima
+ * @since 0.1.0
+ */
 public class SpecUtils {
 
     public static Boolean hasProperty(Field filterField, List<Field> entityFields) {

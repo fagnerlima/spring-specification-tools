@@ -7,6 +7,11 @@ import java.io.Serializable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Define the entity of the Specification.
+ * @author Fagner Lima
+ * @since 0.1.0
+ */
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface SpecEntity {
