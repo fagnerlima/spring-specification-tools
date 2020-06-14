@@ -1,11 +1,37 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>com.github.fagnerlima</groupId>
   <artifactId>spring-specification-tools</artifactId>
   <version>0.1.0</version>
-  <name>spring-specification-tools</name>
-  <url>http://maven.apache.org</url>
+  <packaging>jar</packaging>
+
+  <name>Spring Specification Tools</name>
+  <description>A library with tools for generate Specifications for use with Spring Data JPA.</description>
+  <url>https://github.com/fagnerlima/spring-specification-tools</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Fagner Lima</name>
+      <email>contato@fagnerlima.pro.br</email>
+      <organization>com.github.fagnerlima</organization>
+      <organizationUrl>https://github.com/fagnerlima</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/fagnerlima/spring-specification-tools.git</connection>
+    <developerConnection>scm:git:ssh://github.com:fagnerlima/spring-specification-tools.git</developerConnection>
+    <url>https://github.com/fagnerlima/tree/master</url>
+  </scm>
 
   <properties>
     <maven.compiler.target>11</maven.compiler.target>
