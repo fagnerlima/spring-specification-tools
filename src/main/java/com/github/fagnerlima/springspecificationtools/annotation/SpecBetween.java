@@ -16,16 +16,12 @@ import java.lang.annotation.Target;
 public @interface SpecBetween {
 
     /**
-     * The left property in the between condition.
-     *
-     * @return
+     * @return The left property in the between condition.
      */
     public String left();
 
     /**
-     * The right property in the between condition.
-     *
-     * @return
+     * @return The right property in the between condition.
      */
     public String right();
 

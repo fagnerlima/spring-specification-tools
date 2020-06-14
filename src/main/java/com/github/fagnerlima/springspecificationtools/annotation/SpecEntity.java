@@ -16,6 +16,9 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 public @interface SpecEntity {
 
+    /**
+     * @return The entity class
+     */
     public Class<? extends Serializable> value();
 
 }

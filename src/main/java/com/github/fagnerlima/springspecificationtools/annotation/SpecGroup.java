@@ -18,9 +18,7 @@ import com.github.fagnerlima.springspecificationtools.SpecOperator;
 public @interface SpecGroup {
 
     /**
-     * The operator used in the group.
-     *
-     * @return
+     * @return The operator used in the group.
      */
     public SpecOperator operator() default SpecOperator.AND;
 

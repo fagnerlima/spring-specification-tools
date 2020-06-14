@@ -16,16 +16,12 @@ import java.lang.annotation.Target;
 public @interface SpecPeriod {
 
     /**
-     * The name of the field that represents the start date
-     *
-     * @return
+     * @return The name of the field that represents the start date
      */
     public String start();
 
     /**
-     * The name of the field that represents the end date
-     *
-     * @return
+     * @return The name of the field that represents the end date
      */
     public String end();
 

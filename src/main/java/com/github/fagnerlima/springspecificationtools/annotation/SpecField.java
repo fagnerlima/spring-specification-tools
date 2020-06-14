@@ -18,9 +18,7 @@ import com.github.fagnerlima.springspecificationtools.SpecOperation;
 public @interface SpecField {
 
     /**
-     * The name of the field.
-     *
-     * @return
+     * @return The name of the field.
      */
     public String value() default "";
 
