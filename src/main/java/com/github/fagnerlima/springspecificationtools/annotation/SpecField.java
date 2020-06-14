@@ -23,16 +23,12 @@ public @interface SpecField {
     public String value() default "";
 
     /**
-     * The operation of the query.
-     *
-     * @return
+     * @return The operation of the query.
      */
     public SpecOperation operation() default SpecOperation.EQUAL;
 
     /**
-     * If {@code true} and the value is {@code null}, the query will be included.
-     *
-     * @return
+     * @return If {@code true} and the value is {@code null}, the query will be included.
      */
     public boolean canBeNull() default false;
 
