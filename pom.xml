@@ -8,7 +8,7 @@
   <packaging>jar</packaging>
 
   <name>Spring Specification Tools</name>
-  <description>A library with tools for generate Specifications for use with Spring Data JPA.</description>
+  <description>A library with tools to generate Specifications for use with Spring Data JPA.</description>
   <url>https://github.com/fagnerlima/spring-specification-tools</url>
 
   <licenses>
@@ -34,8 +34,8 @@
   </scm>
 
   <properties>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <apache-commons-lang3.version>3.10</apache-commons-lang3.version>
     <javax-persistence-api.version>2.2</javax-persistence-api.version>

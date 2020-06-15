@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public class FieldUtils {
         List<Field> fields = new ArrayList<>();
 
         for (Class<?> t = type; t != null; t = t.getSuperclass()) {
-            fields.addAll(List.of(t.getDeclaredFields()));
+            fields.addAll(Arrays.asList(t.getDeclaredFields()));
         }
 
         return fields;
