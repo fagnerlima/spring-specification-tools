@@ -1,9 +1,8 @@
+dist: trusty
 language: java
 jdk:
   - oraclejdk11
   - oraclejdk8
-os:
-  - linux
 branches:
   only:
     - master
