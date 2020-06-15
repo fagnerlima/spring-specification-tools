@@ -1,5 +1,7 @@
 language: java
-jdk: oraclejdk11
+jdk:
+  - oraclejdk11
+  - oraclejdk8
 os:
   - linux
 branches:
@@ -7,3 +9,5 @@ branches:
     - master
     - develop
 sudo: true
+install:
+  - ./mvnw clean install -DskipTests=true -Dgpg.skip=true
