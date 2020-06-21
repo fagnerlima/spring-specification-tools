@@ -27,113 +27,39 @@ public class SpecFactory<T extends Serializable> {
 
     private static final String POSTGRESQL_UNACCENT_FUNCTION = "unaccent";
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Specification<T> create(Field field, Object value) {
-        String property = SpecUtils.getPropertyName(field);
-        SpecOperation operation = SpecUtils.getOperation(field);
-
-        if (value == null) {
-            return (root, query, criteriaBuilder) -> criteriaBuilder.isNull(SpecUtils.getPath(root, field));
-        }
-
-        if (value instanceof String) {
-            return create(property, (String) value, operation);
-        }
-
-        if (value instanceof Collection) {
-            return create(property, (Collection<?>) value);
-        }
-
-        if (value instanceof LocalDate && operation.equals(SpecOperation.DATETIME_TO_DATE)) {
-            return create(property, ((LocalDate) value).atStartOfDay(), operation);
-        }
-
-        if (value instanceof Comparable) {
-            return create(property, (Comparable) value, operation);
-        }
-
-        if (value instanceof Boolean) {
-            return create(property, (Boolean) value, operation);
-        }
-
-        if (value instanceof Enum) {
-            return create(property, (Enum) value, operation);
-        }
-
-        return null;
+        return (root, query, criteriaBuilder) -> create(SpecUtils.getPath(root, field), field, value)
+                .toPredicate(root, query, criteriaBuilder);
     }
 
     @SuppressWarnings("unchecked")
     public <Y extends Comparable<? super Y>> Specification<T> create(String property, Y value, SpecOperation operation) {
         return (root, query, criteriaBuilder) -> {
-            Path<? extends Y> x = (Path<? extends Y>) SpecUtils.getPath(root, property);
-
-            return create(x, value, operation).toPredicate(root, query, criteriaBuilder);
+            return create((Path<? extends Y>) SpecUtils.getPath(root, property), value, operation)
+                    .toPredicate(root, query, criteriaBuilder);
         };
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Specification<T> create(String property, LocalDateTime value, SpecOperation operation) {
         return (root, query, criteriaBuilder) -> {
-            Expression<LocalDateTime> x = SpecUtils.getPath(root, property).as(LocalDateTime.class);
-
-            if (operation.equals(SpecOperation.DATETIME_TO_DATE)) {
-                LocalDateTime startOfDay = DateUtils.atStartOfDay(value);
-                LocalDateTime endOfDay = DateUtils.atEndOfDay(value);
-
-                return criteriaBuilder.between(x, startOfDay, endOfDay);
-            }
-
-            return create(property, (Comparable) value, operation).toPredicate(root, query, criteriaBuilder);
+            return create((Path<LocalDateTime>) SpecUtils.getPath(root, property).as(LocalDateTime.class), (LocalDateTime) value, operation)
+                    .toPredicate(root, query, criteriaBuilder);
         };
     }
 
+    @SuppressWarnings("unchecked")
     public Specification<T> create(String property, Collection<?> values) {
         return (root, query, criteriaBuilder) -> {
-            In<Object> predicate = criteriaBuilder.in(SpecUtils.getPath(root, property));
-            values.stream().forEach(value -> predicate.value(value));
-
-            return predicate;
+            return create((Path<Collection<?>>) SpecUtils.getPath(root, property), values)
+                    .toPredicate(root, query, criteriaBuilder);
         };
     }
 
     public Specification<T> create(String property, String value, SpecOperation operation) {
         return (root, query, criteriaBuilder) -> {
-            Expression<String> x = SpecUtils.getPath(root, property).as(String.class);
-            String y = value;
-
-            switch (operation) {
-                case EQUAL_IGNORE_CASE:
-                    x = criteriaBuilder.lower(x);
-                    y = y.toLowerCase();
-                    return criteriaBuilder.equal(x, y);
-                case LIKE:
-                    y = prepareForLike(y);
-                    return criteriaBuilder.like(x, y);
-                case LIKE_IGNORE_CASE:
-                    x = criteriaBuilder.lower(x);
-                    y = prepareForLike(y.toLowerCase());
-                    return criteriaBuilder.like(x, y);
-                case EQUALS_IGNORE_CASE_UNACCENT:
-                    x = criteriaBuilder.function(POSTGRESQL_UNACCENT_FUNCTION, String.class, criteriaBuilder.lower(x));
-                    y = StringUtils.unaccent(y.toLowerCase());
-                    return criteriaBuilder.equal(x, y);
-                case LIKE_IGNORE_CASE_UNACCENT:
-                    x = criteriaBuilder.function(POSTGRESQL_UNACCENT_FUNCTION, String.class, criteriaBuilder.lower(x));
-                    y = prepareForLike(StringUtils.unaccent(y.toLowerCase()));
-                    return criteriaBuilder.like(x, y);
-                default:
-                    return criteriaBuilder.equal(x, y);
-            }
+            return create((Path<String>) SpecUtils.getPath(root, property).as(String.class), value, operation)
+                    .toPredicate(root, query, criteriaBuilder);
         };
-    }
-
-    public Specification<T> create(String property, Boolean value) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(SpecUtils.getPath(root, property), value);
-    }
-
-    public Specification<T> create(String property, Enum<?> value) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(SpecUtils.getPath(root, property), value);
     }
 
     @SuppressWarnings("unchecked")
@@ -183,7 +109,7 @@ public class SpecFactory<T extends Serializable> {
         };
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private Specification<T> create(Path<?> path, Field field, Object value) {
         SpecOperation operation = SpecUtils.getOperation(field);
 
@@ -191,8 +117,20 @@ public class SpecFactory<T extends Serializable> {
             return (root, query, criteriaBuilder) -> criteriaBuilder.isNull(path);
         }
 
-        if (value instanceof Number) {
-            return create((Path<Long>) path, Long.valueOf(value.toString()), operation);
+        if (value instanceof String) {
+            return create((Path<String>) path, (String) value, operation);
+        }
+
+        if (value instanceof Collection) {
+            return create((Path<Collection<?>>) path, (Collection<?>) value);
+        }
+
+        if (value instanceof LocalDate && operation.equals(SpecOperation.DATETIME_TO_DATE)) {
+            return create((Path<LocalDateTime>) path, ((LocalDate) value).atStartOfDay(), operation);
+        }
+
+        if (value instanceof Comparable) {
+            return create((Path<Comparable>) path, (Comparable) value, operation);
         }
 
         return null;
@@ -213,6 +151,68 @@ public class SpecFactory<T extends Serializable> {
                     return criteriaBuilder.equal(path, value);
             }
         };
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private Specification<T> create(Path<LocalDateTime> path, LocalDateTime value, SpecOperation operation) {
+        return (root, query, criteriaBuilder) -> {
+            if (operation.equals(SpecOperation.DATETIME_TO_DATE)) {
+                LocalDateTime startOfDay = DateUtils.atStartOfDay(value);
+                LocalDateTime endOfDay = DateUtils.atEndOfDay(value);
+
+                return criteriaBuilder.between(path, startOfDay, endOfDay);
+            }
+
+            return create((Path<? extends Comparable>) path, (Comparable) value, operation).toPredicate(root, query, criteriaBuilder);
+        };
+    }
+
+    private Specification<T> create(Path<Collection<?>> collection, Collection<?> values) {
+        return (root, query, criteriaBuilder) -> {
+            In<Object> predicate = criteriaBuilder.in(collection);
+            values.stream().forEach(value -> predicate.value(value));
+
+            return predicate;
+        };
+    }
+
+    public Specification<T> create(Path<String> path, String value, SpecOperation operation) {
+        return (root, query, criteriaBuilder) -> {
+            Expression<String> x = path;
+            String y = value;
+
+            switch (operation) {
+                case EQUAL_IGNORE_CASE:
+                    x = criteriaBuilder.lower(x);
+                    y = y.toLowerCase();
+                    return criteriaBuilder.equal(x, y);
+                case LIKE:
+                    y = prepareForLike(y);
+                    return criteriaBuilder.like(x, y);
+                case LIKE_IGNORE_CASE:
+                    x = criteriaBuilder.lower(x);
+                    y = prepareForLike(y.toLowerCase());
+                    return criteriaBuilder.like(x, y);
+                case EQUALS_IGNORE_CASE_UNACCENT:
+                    x = criteriaBuilder.function(POSTGRESQL_UNACCENT_FUNCTION, String.class, criteriaBuilder.lower(x));
+                    y = StringUtils.unaccent(y.toLowerCase());
+                    return criteriaBuilder.equal(x, y);
+                case LIKE_IGNORE_CASE_UNACCENT:
+                    x = criteriaBuilder.function(POSTGRESQL_UNACCENT_FUNCTION, String.class, criteriaBuilder.lower(x));
+                    y = prepareForLike(StringUtils.unaccent(y.toLowerCase()));
+                    return criteriaBuilder.like(x, y);
+                default:
+                    return criteriaBuilder.equal(x, y);
+            }
+        };
+    }
+
+    public Specification<T> create(Path<Boolean> path, Boolean value) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(path, value);
+    }
+
+    public Specification<T> create(Path<Enum<?>> path, Enum<?> value) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(path, value);
     }
 
     private String prepareForLike(String value) {
