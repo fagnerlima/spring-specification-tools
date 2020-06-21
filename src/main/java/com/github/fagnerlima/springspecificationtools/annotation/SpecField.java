@@ -28,7 +28,7 @@ public @interface SpecField {
     public SpecOperation operation() default SpecOperation.EQUAL;
 
     /**
-     * @return If {@code true} and the value is {@code null}, the query will be included.
+     * @return If {@code true} and the value is {@code null}, the condition IS NULL will be included.
      */
     public boolean canBeNull() default false;
 

@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * 
+ * Used for a period of time.
  * @author Fagner Lima
  * @since 0.1.0
  */
