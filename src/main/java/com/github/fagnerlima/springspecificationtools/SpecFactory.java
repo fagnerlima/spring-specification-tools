@@ -62,6 +62,21 @@ public class SpecFactory<T extends Serializable> {
         };
     }
 
+    public Specification<T> create(String property, Boolean value) {
+        return (root, query, criteriaBuilder) -> {
+            return create((Path<Boolean>) SpecUtils.getPath(root, property).as(Boolean.class), value)
+                    .toPredicate(root, query, criteriaBuilder);
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    public Specification<T> create(String property, Enum<?> value) {
+        return (root, query, criteriaBuilder) -> {
+            return create((Path<Enum<?>>) SpecUtils.getPath(root, property), value)
+                    .toPredicate(root, query, criteriaBuilder);
+        };
+    }
+
     @SuppressWarnings("unchecked")
     public Specification<T> between(String leftProperty, String rightProperty, Object value) {
         return (root, query, criteriaBuilder) -> {
