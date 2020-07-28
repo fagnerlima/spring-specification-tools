@@ -175,7 +175,7 @@ Params:
 - **canBeNull**: if `true` and the value is `null`, the condition `IS NULL` will be included.
   - **default**: false.
 
-> At the moment, the SpecOperation's `EQUALS_IGNORE_CASE_UNACCENT` and `EQUALS_IGNORE_CASE_UNACCENT` can be used only with PostgreSQL and require the [unaccent](https://www.postgresql.org/docs/10/unaccent.html) extension.
+> At the moment, the SpecOperation's `EQUAL_IGNORE_CASE_UNACCENT` and `LIKE_IGNORE_CASE_UNACCENT` can be used only with PostgreSQL and require the [unaccent](https://www.postgresql.org/docs/10/unaccent.html) extension.
 
 **Example**:
 
