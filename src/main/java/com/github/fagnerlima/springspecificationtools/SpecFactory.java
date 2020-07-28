@@ -208,7 +208,7 @@ public class SpecFactory<T extends Serializable> {
                     x = criteriaBuilder.lower(x);
                     y = prepareForLike(y.toLowerCase());
                     return criteriaBuilder.like(x, y);
-                case EQUALS_IGNORE_CASE_UNACCENT:
+                case EQUAL_IGNORE_CASE_UNACCENT:
                     x = criteriaBuilder.function(POSTGRESQL_UNACCENT_FUNCTION, String.class, criteriaBuilder.lower(x));
                     y = StringUtils.unaccent(y.toLowerCase());
                     return criteriaBuilder.equal(x, y);

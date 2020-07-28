@@ -13,7 +13,7 @@ public enum SpecOperation {
     DATETIME_TO_DATE,
 
     /** For PostgreSQL (require unaccent extension) */
-    EQUALS_IGNORE_CASE_UNACCENT,
+    EQUAL_IGNORE_CASE_UNACCENT,
 
     /** For PostgreSQL (require unaccent extension) */
     LIKE_IGNORE_CASE_UNACCENT,
