@@ -93,7 +93,7 @@ public class TaskFilter implements Serializable {
   @SpecBetween(left = "period.startDate", right = "period.endDate")
   private LocalDate date;
 
-  @SpecField(operation = Operation.LIKE_IGNORE_CASE_UNACCENT)
+  @SpecField(operation = SpecOperation.LIKE_IGNORE_CASE_UNACCENT)
   private String description;
 
   private Status status;
@@ -184,7 +184,7 @@ Params:
 public class TaskFilter implements Serializable {
   // ...
 
-  @SpecField(operation = Operation.LIKE_IGNORE_CASE)
+  @SpecField(operation = SpecOperation.LIKE_IGNORE_CASE)
   private String description;
 
   private Status status;
@@ -232,7 +232,7 @@ public class TaskFilter implements Serializable {
   private Long tagId;
 
   @SpecJoin
-  @SpecField(value = "tags.description", operation = Operation.LIKE_IGNORE_CASE)
+  @SpecField(value = "tags.description", operation = SpecOperation.LIKE_IGNORE_CASE)
   private Long tagDescription;
 
   // getters and setters
