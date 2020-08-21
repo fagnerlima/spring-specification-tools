@@ -27,6 +27,10 @@ public class SpecFactory<T extends Serializable> {
 
     private static final String POSTGRESQL_UNACCENT_FUNCTION = "unaccent";
 
+    public Specification<T> distinct() {
+        return (root, query, criteriaBuilder) -> query.distinct(true).getRestriction();
+    }
+
     public Specification<T> create(Field field, Object value) {
         return (root, query, criteriaBuilder) -> create(SpecUtils.getPath(root, field), field, value)
                 .toPredicate(root, query, criteriaBuilder);
@@ -116,7 +120,7 @@ public class SpecFactory<T extends Serializable> {
 
                 do {
                     joinRoot = joinRoot.join(deepProperties[index]);
-                } while (index < deepProperties.length - 2);
+                } while (++index < deepProperties.length - 2);
             }
 
             return create(joinRoot.get(deepProperties[deepProperties.length - 1]), field, value)

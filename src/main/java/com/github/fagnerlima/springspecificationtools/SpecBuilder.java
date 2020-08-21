@@ -83,7 +83,8 @@ public class SpecBuilder<T extends Serializable> {
             return null;
         }
 
-        Specification<T> result = specs.get(0);
+        Specification<T> result = specs.get(0)
+                .and(specFactory.distinct());
 
         if (specs.size() > 1) {
             for (int i = 1; i < specs.size(); i++) {
