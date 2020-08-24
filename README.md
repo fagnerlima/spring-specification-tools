@@ -29,121 +29,182 @@ A library with tools to generate Specifications for use with Spring Data JPA.
 
 ### Quick Teaser
 
+> Code extracted from [sample-specification-api](https://github.com/fagnerlima/sample-specification-api).
+
 ```java
+// ...
 @Entity
-public class Task implements Serializable {
+@Table(name = "task")
+public class Task extends BaseEntity {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Embedded
-  private Period period;
+    @Valid
+    @Embedded
+    private Period period;
 
-  private String description;
+    @NotNull
+    private String description;
 
-  @Enumerated(EnumType.STRING)
-  private Status status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
-  @ManyToMany
-  @Fetch(FetchMode.JOIN)
-  @JoinTable(name = "tag_task",
-          joinColumns = @JoinColumn(name = "id_task"),
-          inverseJoinColumns = @JoinColumn(name = "id_tag"))
-  private Set<Tag> tags;
+    @ManyToMany
+    @Fetch(FetchMode.JOIN)
+    @JoinTable(name = "tag_task",
+            joinColumns = @JoinColumn(name = "id_task"),
+            inverseJoinColumns = @JoinColumn(name = "id_tag"))
+    private Set<Tag> tags;
 
-  // getters, setters, equals and hashCode
+    // getters, setters, equals and hashCode
 }
+```
 
-@Entity
-public class Tag implements Serializable {
-
-  private static final long serialVersionUID = 1L;
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
-  private String description;
-
-  // getters, setters, equals and hashCode
-}
-
+```java
 @Embeddable
 public class Period implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  private LocalDate startDate;
+    @NotNull
+    private LocalDate startDate;
 
-  private LocalDate endDate;
+    @NotNull
+    private LocalDate endDate;
 
-  // getters and setters
+    // getters, setters, equals and hashCode
 }
+```
 
+```java
+// ...
+@Entity
+@Table(name = "tag")
+public class Tag extends BaseEntity {
+
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotNull
+    private String description;
+
+    // getters, setters, equals and hashCode
+}
+```
+
+```java
 @SpecEntity(Task.class)
 public class TaskFilter implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  private Long id;
+    private Long id;
 
-  @SpecBetween(left = "period.startDate", right = "period.endDate")
-  private LocalDate date;
+    @SpecBetween(left = "period.startDate", right = "period.endDate")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate date;
 
-  @SpecField(operation = SpecOperation.LIKE_IGNORE_CASE_UNACCENT)
-  private String description;
+    @SpecPeriod(start = "period.startDate", end = "period.endDate")
+    private PeriodFilter period;
 
-  private Status status;
+    @SpecField(operation = SpecOperation.LIKE_IGNORE_CASE_UNACCENT)
+    private String description;
 
-  @SpecJoin
-  @SpecField("tags.id")
-  private Long tagId;
+    private Task.Status status;
 
-  // getters and setters
+    @SpecJoin
+    @SpecField("tags.id")
+    private List<Long> tagId;
+
+    @SpecGroup(operator = SpecOperator.OR)
+    private DescriptionOrTagFilter descriptionOrTag;
+
+    // getters and setters
 }
+```
 
+```java
+public class PeriodFilter implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @SpecPeriodStartDate
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate startDate;
+
+    @SpecPeriodEndDate
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate endDate;
+
+    // getters and setters
+}
+```
+
+```java
+public class DescriptionOrTagFilter implements Serializable {
+
+    private static final long serialVersionUID = -3125120719715109975L;
+
+    @SpecField(operation = SpecOperation.LIKE_IGNORE_CASE_UNACCENT)
+    private String description;
+
+    @SpecJoin
+    @SpecField(value = "tags.description", operation = SpecOperation.LIKE_IGNORE_CASE_UNACCENT)
+    private String tagDescription;
+
+    // ...
+}
+```
+
+```java
 public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificationExecutor<Task> {
 
 }
+```
 
+```java
 @Service
 public class TaskService {
 
-  private TaskRepository taskRepository;
+    private TaskRepository taskRepository;
 
-  public TaskService(TaskRepository taskRepository) {
-    this.taskRepository = taskRepository;
-  }
+    public TaskService(TaskRepository taskRepository) {
+      this.taskRepository = taskRepository;
+    }
 
-  @Override
-  @Transactional(readOnly = true)
-  public Page<T> findAll(Specification<T> specification, Pageable pageable) {
-    return taskRepository.findAll(specification, pageable);
-  }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Task> findAll(Specification<Task> specification, Pageable pageable) {
+        return taskRepository.findAll(specification, pageable);
+    }
 }
+```
 
+```java
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
 
-  private TaskService taskService;
+    private TaskService taskService;
 
-  public TaskController(TaskService taskService) {
-      this.taskService = taskService;
-  }
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
 
-  @GetMapping
-  public ResponseEntity<Page<Task>> findAll(TaskFilter taskFilter, Pageable pageable) {
-      Specification<Task> specification = new SpecBuilder<Task>()
-        .add(taskFilter)
-        .build();
-      Page<Task> tasksPage = taskService.findAll(specification, pageable);
+    @GetMapping
+    public ResponseEntity<Page<Task>> findAll(TaskFilter taskFilter, Pageable pageable) {
+        Specification<Task> specification = new SpecBuilder<Task>().add(taskFilter).build();
+        Page<Task> tasksPage = taskService.findAll(specification, pageable);
 
-      return ResponseEntity.ok(tasksPage);
-  }
+        return ResponseEntity.ok(tasksPage);
+    }
 }
 ```
 
