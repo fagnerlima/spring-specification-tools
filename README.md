@@ -324,7 +324,7 @@ public class TaskFilter implements Serializable {
 
 ### SpecPeriod
 
-Used for a period of time. Includes the annotations `SpecPeriodStartDate` and `SpecPeriodStartDate`.
+Used for a period of time. Includes the annotations `SpecPeriodStartDate` and `SpecPeriodEndDate`.
 
 Params:
 
