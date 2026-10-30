@@ -44,9 +44,10 @@ public class SpecFactory<T extends Serializable> {
         };
     }
 
+    @SuppressWarnings("unchecked")
     public Specification<T> create(String property, LocalDateTime value, SpecOperation operation) {
         return (root, query, criteriaBuilder) -> {
-            return create((Path<LocalDateTime>) SpecUtils.getPath(root, property).as(LocalDateTime.class), (LocalDateTime) value, operation)
+            return create((Path<LocalDateTime>) SpecUtils.getPath(root, property), value, operation)
                     .toPredicate(root, query, criteriaBuilder);
         };
     }
@@ -59,16 +60,18 @@ public class SpecFactory<T extends Serializable> {
         };
     }
 
+    @SuppressWarnings("unchecked")
     public Specification<T> create(String property, String value, SpecOperation operation) {
         return (root, query, criteriaBuilder) -> {
-            return create((Path<String>) SpecUtils.getPath(root, property).as(String.class), value, operation)
+            return create((Path<String>) SpecUtils.getPath(root, property), value, operation)
                     .toPredicate(root, query, criteriaBuilder);
         };
     }
 
+    @SuppressWarnings("unchecked")
     public Specification<T> create(String property, Boolean value) {
         return (root, query, criteriaBuilder) -> {
-            return create((Path<Boolean>) SpecUtils.getPath(root, property).as(Boolean.class), value)
+            return create((Path<Boolean>) SpecUtils.getPath(root, property), value)
                     .toPredicate(root, query, criteriaBuilder);
         };
     }
