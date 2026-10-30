@@ -6,10 +6,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
-import javax.persistence.criteria.CriteriaBuilder.In;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Path;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
 
 import org.springframework.data.jpa.domain.Specification;
 
