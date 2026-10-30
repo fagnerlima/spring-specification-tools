@@ -20,7 +20,7 @@ A library with tools to generate Specifications for use with Spring Data JPA.
 
 | spring-specification-tools | Java | Spring Data JPA | Spring Boot | Persistence API |
 | --- | --- | --- | --- | --- |
-| 1.x | 21+ | 4.x | 4.x | `jakarta.persistence` |
+| 1.x | 21+ | 4.x (tested with 4.1) | 4.x | `jakarta.persistence` |
 | 0.3.x (legacy) | 8+ | 2.x | 2.x | `javax.persistence` |
 
 Version 1.x is built and tested against Spring Boot 4.1 (Spring Data JPA 4.1, Hibernate 7).
@@ -444,14 +444,25 @@ Releases are fully automated by the [Release workflow](.github/workflows/release
    git push origin vX.Y.Z
    ```
 
-3. The workflow checks that `CHANGELOG.md` has the `## [X.Y.Z]` section, builds and tests the project with
-   `-Drevision=X.Y.Z`, signs the artifacts, publishes them to Maven Central through the
-   [Central Portal](https://central.sonatype.com/) and creates the GitHub Release with that changelog section as notes.
+3. The workflow checks that the tagged commit is on `master` and that `CHANGELOG.md` has the `## [X.Y.Z]` section,
+   builds and tests the project with `-Drevision=X.Y.Z`, signs the artifacts, publishes them to Maven Central through
+   the [Central Portal](https://central.sonatype.com/) and creates the GitHub Release with that changelog section as
+   notes.
+
+If the artifacts went live on Maven Central but the job failed afterwards (for example while waiting for publication
+or creating the GitHub Release), do not re-run the deploy: a published version cannot be uploaded again. Check the
+deployment on the Central Portal and, once it is published, create the GitHub Release by hand:
+
+```shell
+gh release create vX.Y.Z --verify-tag --notes-file <(.github/scripts/changelog-section.sh X.Y.Z)
+```
 
 One-time setup, done by the maintainer:
 
 - The `com.github.fagnerlima` namespace must be verified on the Central Portal for the publishing account.
-- Repository (or `maven-central` environment) secrets:
+- Create a `maven-central` environment (Settings → Environments) with a deployment rule that only allows tags matching
+  `v*.*.*` and the maintainer as required reviewer.
+- Store these secrets **only** in the `maven-central` environment, never as repository secrets:
 
   | Secret | Value |
   | --- | --- |
@@ -462,3 +473,5 @@ One-time setup, done by the maintainer:
 
 - The public part of the GPG key must be published to a key server supported by Maven Central, such as
   `keys.openpgp.org`.
+- Add a tag ruleset (Settings → Rules → Rulesets) targeting `refs/tags/v*` that restricts creation, updates and
+  deletions, so only the maintainer can create or move release tags.

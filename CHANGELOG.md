@@ -19,7 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SpecBuilder.add(Specification)` ignores `null` specifications.
 - `SpecBuilder.add(Object)` throws an `IllegalArgumentException` explaining the problem, instead of a
   `NullPointerException`, when the filter class is not annotated with `@SpecEntity`.
-- Releases are published to Maven Central through the Central Portal by an automated GitHub Actions workflow.
+- The property-name `SpecFactory.create(String, ...)` overloads for `String`, `Boolean` and `LocalDateTime` values no
+  longer cast the attribute type with `.as(..)`, which fails with a `ClassCastException` on Hibernate 6 and later.
 
 ### Removed
 
