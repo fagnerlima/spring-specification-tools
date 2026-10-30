@@ -1,7 +1,8 @@
 # Spring Specification Tools
 
-[![Build Status](https://travis-ci.org/fagnerlima/spring-specification-tools.svg?branch=master)](https://travis-ci.org/fagnerlima/spring-specification-tools)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.fagnerlima/spring-specification-tools/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.fagnerlima/spring-specification-tools)
+[![CI](https://github.com/fagnerlima/spring-specification-tools/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/fagnerlima/spring-specification-tools/actions/workflows/ci.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.fagnerlima/spring-specification-tools)](https://central.sonatype.com/artifact/com.github.fagnerlima/spring-specification-tools)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A library with tools to generate Specifications for use with Spring Data JPA.
 
@@ -10,14 +11,33 @@ A library with tools to generate Specifications for use with Spring Data JPA.
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
 - [SpecBuilder](#specbuilder)
+- [SpecOperation](#specoperation)
+- [Migrating from 0.3.x](#migrating-from-03x)
+- [Building](#building)
+- [Releasing](#releasing)
 
 ## Requirements
 
-* JDK 1.8.
+| spring-specification-tools | Java | Spring Data JPA | Spring Boot | Persistence API |
+| --- | --- | --- | --- | --- |
+| 1.x | 21+ | 4.x | 4.x | `jakarta.persistence` |
+| 0.3.x (legacy) | 8+ | 2.x | 2.x | `javax.persistence` |
+
+Version 1.x is built and tested against Spring Boot 4.1 (Spring Data JPA 4.1, Hibernate 7).
+
+Spring Data JPA and the Jakarta Persistence API are `provided` dependencies: the library uses the versions your
+application already has (for example through `spring-boot-starter-data-jpa`), so your Spring Boot BOM stays in control.
+
+The `*_IGNORE_CASE_UNACCENT` operations additionally require PostgreSQL with the
+[unaccent](https://www.postgresql.org/docs/current/unaccent.html) extension.
 
 ## Getting Started
 
-### Maven Configuration
+### Installation
+
+Replace `${version}` with the latest version shown in the Maven Central badge above.
+
+Maven:
 
 ```xml
 <dependency>
@@ -27,12 +47,22 @@ A library with tools to generate Specifications for use with Spring Data JPA.
 </dependency>
 ```
 
+Gradle:
+
+```groovy
+implementation "com.github.fagnerlima:spring-specification-tools:${version}"
+```
+
 ### Quick Teaser
 
 > Code extracted from [sample-specification-api](https://github.com/fagnerlima/sample-specification-api).
 
 ```java
+import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 // ...
+
 @Entity
 @Table(name = "task")
 public class Task extends BaseEntity {
@@ -65,6 +95,10 @@ public class Task extends BaseEntity {
 ```
 
 ```java
+import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotNull;
+// ...
+
 @Embeddable
 public class Period implements Serializable {
 
@@ -81,7 +115,10 @@ public class Period implements Serializable {
 ```
 
 ```java
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 // ...
+
 @Entity
 @Table(name = "tag")
 public class Tag extends BaseEntity {
@@ -179,7 +216,6 @@ public class TaskService {
       this.taskRepository = taskRepository;
     }
 
-    @Override
     @Transactional(readOnly = true)
     public Page<Task> findAll(Specification<Task> specification, Pageable pageable) {
         return taskRepository.findAll(specification, pageable);
@@ -210,7 +246,7 @@ public class TaskController {
 
 ## SpecBuilder
 
-The **SpecBuilder** build Specifications using filter classes with Spec annotations. The filter class requires, at least, the SpecEntity annotation indicating the entity class.
+The **SpecBuilder** build Specifications using filter classes with Spec annotations. The filter class requires, at least, the SpecEntity annotation indicating the entity class; otherwise `add` throws an `IllegalArgumentException`.
 
 ```java
 @SpecEntity(Task.class)
@@ -220,6 +256,8 @@ public class TaskFilter implements Serializable {
 ```
 
 The properties of the filter will be used by SpecBuilder to build the Specification. All of the properties require *getters* and *setters*.
+
+Properties with `null` values are ignored (unless `@SpecField(canBeNull = true)` is set), and plain properties without a matching entity field are skipped. When no condition applies, `build()` returns `Specification.unrestricted()`, which matches every entity.
 
 By default, the property will result a single condition with the "equal operator", but you can custom the conditions with the following annotations:
 
@@ -236,7 +274,7 @@ Params:
 - **canBeNull**: if `true` and the value is `null`, the condition `IS NULL` will be included.
   - **default**: false.
 
-> At the moment, the SpecOperation's `EQUAL_IGNORE_CASE_UNACCENT` and `LIKE_IGNORE_CASE_UNACCENT` can be used only with PostgreSQL and require the [unaccent](https://www.postgresql.org/docs/10/unaccent.html) extension.
+> At the moment, the SpecOperation's `EQUAL_IGNORE_CASE_UNACCENT` and `LIKE_IGNORE_CASE_UNACCENT` can be used only with PostgreSQL and require the [unaccent](https://www.postgresql.org/docs/current/unaccent.html) extension.
 
 **Example**:
 
@@ -294,7 +332,7 @@ public class TaskFilter implements Serializable {
 
   @SpecJoin
   @SpecField(value = "tags.description", operation = SpecOperation.LIKE_IGNORE_CASE)
-  private Long tagDescription;
+  private String tagDescription;
 
   // getters and setters
 }
@@ -357,3 +395,70 @@ public class PeriodFilter implements Serializable {
   // getters and setters
 }
 ```
+
+## SpecOperation
+
+| Operation | Condition |
+| --- | --- |
+| `EQUAL` (default) | `field = value`; a collection value becomes `field IN (values)` |
+| `EQUAL_IGNORE_CASE` | `lower(field) = lower(value)` |
+| `LIKE` | `field LIKE %value%`, with whitespace in the value replaced by `%` |
+| `LIKE_IGNORE_CASE` | `LIKE`, ignoring case |
+| `GREATER_THAN`, `GREATER_THAN_OR_EQUAL` | `field > value`, `field >= value` |
+| `LESS_THAN`, `LESS_THAN_OR_EQUAL` | `field < value`, `field <= value` |
+| `DATETIME_TO_DATE` | a `LocalDateTime` field within the whole day of a `LocalDate` value |
+| `EQUAL_IGNORE_CASE_UNACCENT` | `EQUAL_IGNORE_CASE`, also ignoring accents (PostgreSQL only) |
+| `LIKE_IGNORE_CASE_UNACCENT` | `LIKE_IGNORE_CASE`, also ignoring accents (PostgreSQL only) |
+
+## Migrating from 0.3.x
+
+1. Upgrade the application to Java 21 and Spring Boot 4 (Spring Data JPA 4).
+2. Make sure the application declares Spring Data JPA itself, for example with `spring-boot-starter-data-jpa`; the
+   library no longer brings it transitively.
+3. Replace `javax.persistence` imports with `jakarta.persistence` in your entities.
+4. If your code checked `SpecBuilder.build()` for `null`, remove that check: it now returns
+   `Specification.unrestricted()` when there are no conditions, which you can pass straight to the repository.
+5. If you relied on `commons-lang3` coming through this library, declare it in your application.
+
+The annotations, `SpecBuilder`, `SpecOperation` and `SpecOperator` keep the same packages and usage.
+
+## Building
+
+```shell
+./mvnw verify
+```
+
+The build requires Java 21. The PostgreSQL tests use [Testcontainers](https://testcontainers.com/), so a running Docker
+daemon is required too.
+
+## Releasing
+
+Releases are fully automated by the [Release workflow](.github/workflows/release.yml):
+
+1. Open a pull request that moves the `Unreleased` entries of [CHANGELOG.md](CHANGELOG.md) into a new
+   `## [X.Y.Z] - YYYY-MM-DD` section, and merge it.
+2. Tag the merged commit and push the tag:
+
+   ```shell
+   git tag vX.Y.Z
+   git push origin vX.Y.Z
+   ```
+
+3. The workflow checks that `CHANGELOG.md` has the `## [X.Y.Z]` section, builds and tests the project with
+   `-Drevision=X.Y.Z`, signs the artifacts, publishes them to Maven Central through the
+   [Central Portal](https://central.sonatype.com/) and creates the GitHub Release with that changelog section as notes.
+
+One-time setup, done by the maintainer:
+
+- The `com.github.fagnerlima` namespace must be verified on the Central Portal for the publishing account.
+- Repository (or `maven-central` environment) secrets:
+
+  | Secret | Value |
+  | --- | --- |
+  | `MAVEN_CENTRAL_USERNAME` | Central Portal user token username |
+  | `MAVEN_CENTRAL_PASSWORD` | Central Portal user token password |
+  | `MAVEN_GPG_PRIVATE_KEY` | ASCII-armored GPG private key used to sign the artifacts (`gpg --armor --export-secret-keys <key-id>`) |
+  | `MAVEN_GPG_PASSPHRASE` | Passphrase of that GPG key |
+
+- The public part of the GPG key must be published to a key server supported by Maven Central, such as
+  `keys.openpgp.org`.
