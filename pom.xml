@@ -200,6 +200,9 @@
         <version>${flatten-maven-plugin.version}</version>
         <configuration>
           <flattenMode>ossrh</flattenMode>
+          <pomElements>
+            <issueManagement>keep</issueManagement>
+          </pomElements>
           <updatePomFile>true</updatePomFile>
         </configuration>
         <executions>
