@@ -286,6 +286,8 @@
               <publishingServerId>central</publishingServerId>
               <autoPublish>true</autoPublish>
               <waitUntil>published</waitUntil>
+              <!-- Seconds to wait for the deployment to be published (the plugin's minimum). -->
+              <waitMaxTime>1800</waitMaxTime>
             </configuration>
           </plugin>
         </plugins>
