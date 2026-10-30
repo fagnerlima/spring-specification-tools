@@ -3,8 +3,8 @@ package com.github.fagnerlima.springspecificationtools;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Root;
 
 import com.github.fagnerlima.springspecificationtools.annotation.SpecBetween;
 import com.github.fagnerlima.springspecificationtools.annotation.SpecField;

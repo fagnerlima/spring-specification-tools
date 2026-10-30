@@ -39,13 +39,16 @@ public class SpecBuilder<T extends Serializable> {
     }
 
     /**
-     * Accept and Specification object.
+     * Accept and Specification object. A {@code null} Specification is ignored.
      *
      * @param spec Specification object
      * @return SpecBuilder instance
      */
     public SpecBuilder<T> add(Specification<T> spec) {
-        specs.add(spec);
+        // Spring Data JPA 4 rejects null operands in and/or, so null is skipped here instead.
+        if (spec != null) {
+            specs.add(spec);
+        }
 
         return this;
     }
@@ -55,18 +58,24 @@ public class SpecBuilder<T extends Serializable> {
      *
      * @param filter object annotated with {@link SpecEntity}
      * @return SpecBuilder instance
+     * @throws IllegalArgumentException if the filter class is not annotated with {@link SpecEntity}
      */
     @SuppressWarnings("unchecked")
     public SpecBuilder<T> add(Object filter) {
-        Class<T> entityClass = (Class<T>) filter.getClass().getAnnotation(SpecEntity.class).value();
+        SpecEntity specEntity = filter.getClass().getAnnotation(SpecEntity.class);
 
-        return add(filter, entityClass);
+        if (specEntity == null) {
+            throw new IllegalArgumentException(
+                    filter.getClass().getName() + " must be annotated with @" + SpecEntity.class.getSimpleName());
+        }
+
+        return add(filter, (Class<T>) specEntity.value());
     }
 
     /**
      * Build the Specification using the AND {@code Operator}.
      *
-     * @return the Specification
+     * @return the Specification, or {@link Specification#unrestricted()} if there are no conditions
      */
     public Specification<T> build() {
         return build(SpecOperator.AND);
@@ -76,23 +85,20 @@ public class SpecBuilder<T extends Serializable> {
      * Build the Specification.
      *
      * @param operator the operator that will be used in the Specification
-     * @return the Specification
+     * @return the Specification, or {@link Specification#unrestricted()} if there are no conditions
      */
     public Specification<T> build(SpecOperator operator) {
         if (specs.isEmpty()) {
-            return null;
+            return Specification.unrestricted();
         }
 
         Specification<T> result = specs.get(0)
                 .and(specFactory.distinct());
 
-        if (specs.size() > 1) {
-            for (int i = 1; i < specs.size(); i++) {
-                result = Specification.where(result);
-                result = operator.equals(SpecOperator.AND)
-                        ? result.and(specs.get(i))
-                        : result.or(specs.get(i));
-            }
+        for (int i = 1; i < specs.size(); i++) {
+            result = operator == SpecOperator.AND
+                    ? result.and(specs.get(i))
+                    : result.or(specs.get(i));
         }
 
         return result;
