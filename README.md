@@ -1,7 +1,7 @@
 # Spring Specification Tools
 
 [![CI](https://github.com/fagnerlima/spring-specification-tools/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/fagnerlima/spring-specification-tools/actions/workflows/ci.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.fagnerlima/spring-specification-tools)](https://central.sonatype.com/artifact/com.github.fagnerlima/spring-specification-tools)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.fagnerlima/spring-specification-tools)](https://central.sonatype.com/artifact/io.github.fagnerlima/spring-specification-tools)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A library with tools to generate Specifications for use with Spring Data JPA.
@@ -41,7 +41,7 @@ Maven:
 
 ```xml
 <dependency>
-  <groupId>com.github.fagnerlima</groupId>
+  <groupId>io.github.fagnerlima</groupId>
   <artifactId>spring-specification-tools</artifactId>
   <version>${version}</version>
 </dependency>
@@ -50,7 +50,7 @@ Maven:
 Gradle:
 
 ```groovy
-implementation "com.github.fagnerlima:spring-specification-tools:${version}"
+implementation "io.github.fagnerlima:spring-specification-tools:${version}"
 ```
 
 ### Quick Teaser
@@ -412,14 +412,17 @@ public class PeriodFilter implements Serializable {
 
 ## Migrating from 0.3.x
 
-1. Upgrade the application to Java 21 and Spring Boot 4 (Spring Data JPA 4).
-2. Make sure the application declares Spring Data JPA itself, for example with `spring-boot-starter-data-jpa`; the
+1. Change the dependency `groupId` from `com.github.fagnerlima` to `io.github.fagnerlima` (see
+   [Installation](#installation)). The Java packages stay `com.github.fagnerlima.springspecificationtools`, so imports
+   of this library do not change.
+2. Upgrade the application to Java 21 and Spring Boot 4 (Spring Data JPA 4).
+3. Make sure the application declares Spring Data JPA itself, for example with `spring-boot-starter-data-jpa`; the
    library no longer brings it transitively.
-3. Replace `javax.persistence` imports with `jakarta.persistence` in your entities.
-4. If your code checked `SpecBuilder.build()` for `null`, remove that check: it now returns
+4. Replace `javax.persistence` imports with `jakarta.persistence` in your entities.
+5. If your code checked `SpecBuilder.build()` for `null`, remove that check: it now returns
    `Specification.unrestricted()` when there are no conditions, which you can pass straight to the repository.
-5. If you relied on `commons-lang3` coming through this library, declare it in your application.
-6. Blank `String` filter values (empty or whitespace only) are now ignored like `null`. If a filter relied on `""`
+6. If you relied on `commons-lang3` coming through this library, declare it in your application.
+7. Blank `String` filter values (empty or whitespace only) are now ignored like `null`. If a filter relied on `""`
    to match empty strings, add that condition yourself with `SpecBuilder.add(Specification)`.
 
 The annotations, `SpecBuilder`, `SpecOperation` and `SpecOperator` keep the same packages and usage.
@@ -461,7 +464,7 @@ gh release create vX.Y.Z --verify-tag --notes-file <(.github/scripts/changelog-s
 
 One-time setup, done by the maintainer:
 
-- The `com.github.fagnerlima` namespace must be verified on the Central Portal for the publishing account.
+- The `io.github.fagnerlima` namespace must be verified on the Central Portal for the publishing account.
 - Create a `maven-central` environment (Settings → Environments) with a deployment rule that only allows tags matching
   `v*.*.*` and the maintainer as required reviewer.
 - Store these secrets **only** in the `maven-central` environment, never as repository secrets:

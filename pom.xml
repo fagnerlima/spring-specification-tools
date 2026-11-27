@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.github.fagnerlima</groupId>
+  <groupId>io.github.fagnerlima</groupId>
   <artifactId>spring-specification-tools</artifactId>
   <version>${revision}</version>
   <packaging>jar</packaging>
@@ -22,7 +22,7 @@
     <developer>
       <name>Fagner Lima</name>
       <email>contato@fagnerlima.com</email>
-      <organization>com.github.fagnerlima</organization>
+      <organization>io.github.fagnerlima</organization>
       <organizationUrl>https://github.com/fagnerlima</organizationUrl>
     </developer>
   </developers>
