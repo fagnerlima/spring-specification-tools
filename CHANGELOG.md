@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-27
+
 ### Changed
 
 - **Breaking:** the Maven `groupId` is now `io.github.fagnerlima` instead of `com.github.fagnerlima`, so update
@@ -64,7 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[Unreleased]: https://github.com/fagnerlima/spring-specification-tools/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/fagnerlima/spring-specification-tools/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/fagnerlima/spring-specification-tools/compare/v0.3.1...v1.0.0
 [0.3.1]: https://github.com/fagnerlima/spring-specification-tools/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/fagnerlima/spring-specification-tools/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/fagnerlima/spring-specification-tools/compare/0.1.0...v0.2.0
