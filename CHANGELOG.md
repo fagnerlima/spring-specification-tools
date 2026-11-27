@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Breaking:** the Maven `groupId` is now `io.github.fagnerlima` instead of `com.github.fagnerlima`, so update
-  the dependency coordinates. The Java packages are unchanged (`com.github.fagnerlima.springspecificationtools`).
+  the dependency coordinates and make sure the old ones are not still on the classpath, since both contain the same
+  classes. The Java packages are unchanged (`com.github.fagnerlima.springspecificationtools`).
 - **Breaking:** requires Java 21 or later.
 - **Breaking:** requires Spring Data JPA 4 (Spring Boot 4) and Jakarta Persistence: the library now uses
   `jakarta.persistence` instead of `javax.persistence`.

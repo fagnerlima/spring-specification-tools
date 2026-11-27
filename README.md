@@ -37,6 +37,10 @@ The `*_IGNORE_CASE_UNACCENT` operations additionally require PostgreSQL with the
 
 Replace `${version}` with the latest version shown in the Maven Central badge above.
 
+> Versions 0.1.0 to 0.3.1 were published as `com.github.fagnerlima:spring-specification-tools`; 1.0.0 and later
+> use `io.github.fagnerlima`. Dependency update tools such as Dependabot and Renovate do not suggest the move to the
+> new coordinates, so follow [Migrating from 0.3.x](#migrating-from-03x) to upgrade.
+
 Maven:
 
 ```xml
@@ -415,6 +419,9 @@ public class PeriodFilter implements Serializable {
 1. Change the dependency `groupId` from `com.github.fagnerlima` to `io.github.fagnerlima` (see
    [Installation](#installation)). The Java packages stay `com.github.fagnerlima.springspecificationtools`, so imports
    of this library do not change.
+   Both artifacts contain the same classes, so make sure the old coordinates are not still on the classpath through
+   another dependency (`mvn dependency:tree -Dincludes=com.github.fagnerlima` or
+   `gradle dependencyInsight --dependency spring-specification-tools`), and exclude them if they are.
 2. Upgrade the application to Java 21 and Spring Boot 4 (Spring Data JPA 4).
 3. Make sure the application declares Spring Data JPA itself, for example with `spring-boot-starter-data-jpa`; the
    library no longer brings it transitively.
