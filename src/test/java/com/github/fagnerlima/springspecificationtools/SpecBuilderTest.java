@@ -463,6 +463,68 @@ class SpecBuilderTest {
 
     }
 
+    /**
+     * Spring MVC binds an empty form field such as {@code ?description=} to {@code ""}, which must mean "no filter".
+     */
+    @Nested
+    class BlankStringValues {
+
+        @Test
+        void emptyStringOnEqualFieldAddsNoCondition() {
+            TaskFilter filter = new TaskFilter();
+            filter.setDescription("");
+
+            assertThat(find(filter)).isEqualTo(ALL_TASKS);
+        }
+
+        @Test
+        void whitespaceOnlyStringAddsNoCondition() {
+            TaskFilter filter = new TaskFilter();
+            filter.setDescription(" \t ");
+
+            assertThat(find(filter)).isEqualTo(ALL_TASKS);
+        }
+
+        @Test
+        void blankJoinValueAddsNoInnerJoin() {
+            JoinFilter filter = new JoinFilter();
+            filter.setTagDescription("");
+            filter.setTagDescriptionLike("  ");
+
+            // "Plan sprint" has no tags and is only kept when no join is added.
+            assertThat(find(filter)).isEqualTo(ALL_TASKS);
+        }
+
+        @Test
+        void orGroupAppliesOnlyThePresentField() {
+            GroupFilter descriptionOnly = new GroupFilter();
+            descriptionOnly.setDescriptionOrTag(new DescriptionOrTagFilter("documentation", ""));
+            GroupFilter tagOnly = new GroupFilter();
+            tagOnly.setDescriptionOrTag(new DescriptionOrTagFilter(" ", "review"));
+
+            assertThat(find(descriptionOnly)).containsExactly(WRITE_DOCUMENTATION);
+            assertThat(find(tagOnly)).containsExactly(REVIEW_PULL_REQUEST);
+        }
+
+        @Test
+        void orGroupWithOnlyBlankFieldsAddsNoCondition() {
+            GroupFilter filter = new GroupFilter();
+            filter.setDescriptionOrTag(new DescriptionOrTagFilter("", " "));
+
+            assertThat(find(filter)).isEqualTo(ALL_TASKS);
+        }
+
+        @Test
+        void blankValueIsIgnoredEvenWhenCanBeNull() {
+            NullableNotesFilter filter = new NullableNotesFilter();
+            filter.setNotes("");
+
+            // canBeNull only turns an explicit null into IS NULL; a blank value still means "no filter".
+            assertThat(find(filter)).isEqualTo(ALL_TASKS);
+        }
+
+    }
+
     public static class BaseFilter {
 
         private Long id;

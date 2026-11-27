@@ -18,6 +18,7 @@ import com.github.fagnerlima.springspecificationtools.annotation.SpecPeriod;
 import com.github.fagnerlima.springspecificationtools.annotation.SpecPeriodEndDate;
 import com.github.fagnerlima.springspecificationtools.annotation.SpecPeriodStartDate;
 import com.github.fagnerlima.springspecificationtools.util.FieldUtils;
+import com.github.fagnerlima.springspecificationtools.util.StringUtils;
 
 /**
  * Used for build Specification objects.
@@ -55,6 +56,9 @@ public class SpecBuilder<T extends Serializable> {
 
     /**
      * Accept an object annotated with {@link SpecEntity}.
+     * <p>
+     * Properties whose value is {@code null} or a blank {@code String} (empty or whitespace only) add no condition. A
+     * blank {@code String} is ignored even with {@link SpecField#canBeNull()}, which only applies to {@code null}.
      *
      * @param filter object annotated with {@link SpecEntity}
      * @return SpecBuilder instance
@@ -115,6 +119,11 @@ public class SpecBuilder<T extends Serializable> {
                 SpecField specField = filterField.getAnnotation(SpecField.class);
 
                 if (value == null && (specField == null || !specField.canBeNull())) {
+                    continue;
+                }
+
+                // An empty form field is bound as "" and means "no filter", not a match on an empty text.
+                if (value instanceof String text && StringUtils.isBlank(text)) {
                     continue;
                 }
 

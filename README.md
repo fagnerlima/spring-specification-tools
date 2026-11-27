@@ -257,7 +257,7 @@ public class TaskFilter implements Serializable {
 
 The properties of the filter will be used by SpecBuilder to build the Specification. All of the properties require *getters* and *setters*.
 
-Properties with `null` values are ignored (unless `@SpecField(canBeNull = true)` is set), and plain properties without a matching entity field are skipped. When no condition applies, `build()` returns `Specification.unrestricted()`, which matches every entity.
+Properties with `null` values are ignored (unless `@SpecField(canBeNull = true)` is set), and plain properties without a matching entity field are skipped. Blank `String` values (empty or whitespace only, as Spring MVC binds an empty form field such as `?description=`) are ignored like `null`, in every kind of property (`@SpecField`, `@SpecJoin`, inside a `@SpecGroup`), even with `canBeNull = true`. A blank `@SpecJoin` value therefore adds no join, and a `@SpecGroup` applies only its non-blank properties. When no condition applies, `build()` returns `Specification.unrestricted()`, which matches every entity.
 
 By default, the property will result a single condition with the "equal operator", but you can custom the conditions with the following annotations:
 
@@ -271,7 +271,7 @@ Params:
   - **default**: the name of the field in the filter.
 - **operation**: the operation of the query (`SpecOperation` enum);
   - **default**: SpecOperation.EQUAL.
-- **canBeNull**: if `true` and the value is `null`, the condition `IS NULL` will be included.
+- **canBeNull**: if `true` and the value is `null`, the condition `IS NULL` will be included; a blank `String` value is still ignored.
   - **default**: false.
 
 > At the moment, the SpecOperation's `EQUAL_IGNORE_CASE_UNACCENT` and `LIKE_IGNORE_CASE_UNACCENT` can be used only with PostgreSQL and require the [unaccent](https://www.postgresql.org/docs/current/unaccent.html) extension.
@@ -419,6 +419,8 @@ public class PeriodFilter implements Serializable {
 4. If your code checked `SpecBuilder.build()` for `null`, remove that check: it now returns
    `Specification.unrestricted()` when there are no conditions, which you can pass straight to the repository.
 5. If you relied on `commons-lang3` coming through this library, declare it in your application.
+6. Blank `String` filter values (empty or whitespace only) are now ignored like `null`. If a filter relied on `""`
+   to match empty strings, add that condition yourself with `SpecBuilder.add(Specification)`.
 
 The annotations, `SpecBuilder`, `SpecOperation` and `SpecOperator` keep the same packages and usage.
 

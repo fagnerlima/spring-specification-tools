@@ -115,6 +115,14 @@ class PostgreSqlUnaccentTest {
         assertThat(page.getContent()).extracting(Task::getDescription).containsExactly(COFFEE_BREAK, WEEKLY_MEETING);
     }
 
+    @Test
+    void orGroupWithBlankJoinedFieldAppliesOnlyThePresentField() {
+        UnaccentFilter filter = new UnaccentFilter();
+        filter.setDescriptionOrTag(new DescriptionOrTagFilter("cafe", ""));
+
+        assertThat(find(filter)).containsExactly(COFFEE_BREAK);
+    }
+
     /**
      * Declaring the container as a bean lets Spring stop it only after the DataSource that uses it is closed.
      */

@@ -22,6 +22,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The property-name `SpecFactory.create(String, ...)` overloads for `String`, `Boolean` and `LocalDateTime` values no
   longer cast the attribute type with `.as(..)`, which fails with a `ClassCastException` on Hibernate 6 and later.
 
+### Fixed
+
+- `SpecBuilder.add(Object)` ignores blank `String` filter values (empty or whitespace only, such as an empty form
+  field bound from `?description=`) like `null`, even with `@SpecField(canBeNull = true)`. Previously a blank value
+  became `LIKE '%%'`, matching every row inside an `OR` `@SpecGroup`, and a blank `@SpecJoin` value still added an inner
+  join that dropped entities without the association.
+  A blank value therefore never becomes a condition, not even `EQUAL ''`: to filter by an empty string, add your own
+  `Specification` with `SpecBuilder.add(Specification)`.
+
 ### Removed
 
 - Support for Java 8 to 20, Spring Boot 2 and 3 and `javax.persistence`. Keep using the 0.3.x versions on those
