@@ -18,6 +18,7 @@ import com.github.fagnerlima.springspecificationtools.annotation.SpecPeriod;
 import com.github.fagnerlima.springspecificationtools.annotation.SpecPeriodEndDate;
 import com.github.fagnerlima.springspecificationtools.annotation.SpecPeriodStartDate;
 import com.github.fagnerlima.springspecificationtools.util.FieldUtils;
+import com.github.fagnerlima.springspecificationtools.util.StringUtils;
 
 /**
  * Used for build Specification objects.
@@ -39,34 +40,46 @@ public class SpecBuilder<T extends Serializable> {
     }
 
     /**
-     * Accept and Specification object.
+     * Accept and Specification object. A {@code null} Specification is ignored.
      *
      * @param spec Specification object
      * @return SpecBuilder instance
      */
     public SpecBuilder<T> add(Specification<T> spec) {
-        specs.add(spec);
+        // Spring Data JPA 4 rejects null operands in and/or, so null is skipped here instead.
+        if (spec != null) {
+            specs.add(spec);
+        }
 
         return this;
     }
 
     /**
      * Accept an object annotated with {@link SpecEntity}.
+     * <p>
+     * Properties whose value is {@code null} or a blank {@code String} (empty or whitespace only) add no condition. A
+     * blank {@code String} is ignored even with {@link SpecField#canBeNull()}, which only applies to {@code null}.
      *
      * @param filter object annotated with {@link SpecEntity}
      * @return SpecBuilder instance
+     * @throws IllegalArgumentException if the filter class is not annotated with {@link SpecEntity}
      */
     @SuppressWarnings("unchecked")
     public SpecBuilder<T> add(Object filter) {
-        Class<T> entityClass = (Class<T>) filter.getClass().getAnnotation(SpecEntity.class).value();
+        SpecEntity specEntity = filter.getClass().getAnnotation(SpecEntity.class);
 
-        return add(filter, entityClass);
+        if (specEntity == null) {
+            throw new IllegalArgumentException(
+                    filter.getClass().getName() + " must be annotated with @" + SpecEntity.class.getSimpleName());
+        }
+
+        return add(filter, (Class<T>) specEntity.value());
     }
 
     /**
      * Build the Specification using the AND {@code Operator}.
      *
-     * @return the Specification
+     * @return the Specification, or {@link Specification#unrestricted()} if there are no conditions
      */
     public Specification<T> build() {
         return build(SpecOperator.AND);
@@ -76,23 +89,20 @@ public class SpecBuilder<T extends Serializable> {
      * Build the Specification.
      *
      * @param operator the operator that will be used in the Specification
-     * @return the Specification
+     * @return the Specification, or {@link Specification#unrestricted()} if there are no conditions
      */
     public Specification<T> build(SpecOperator operator) {
         if (specs.isEmpty()) {
-            return null;
+            return Specification.unrestricted();
         }
 
         Specification<T> result = specs.get(0)
                 .and(specFactory.distinct());
 
-        if (specs.size() > 1) {
-            for (int i = 1; i < specs.size(); i++) {
-                result = Specification.where(result);
-                result = operator.equals(SpecOperator.AND)
-                        ? result.and(specs.get(i))
-                        : result.or(specs.get(i));
-            }
+        for (int i = 1; i < specs.size(); i++) {
+            result = operator == SpecOperator.AND
+                    ? result.and(specs.get(i))
+                    : result.or(specs.get(i));
         }
 
         return result;
@@ -109,6 +119,11 @@ public class SpecBuilder<T extends Serializable> {
                 SpecField specField = filterField.getAnnotation(SpecField.class);
 
                 if (value == null && (specField == null || !specField.canBeNull())) {
+                    continue;
+                }
+
+                // An empty form field is bound as "" and means "no filter", not a match on an empty text.
+                if (value instanceof String text && StringUtils.isBlank(text)) {
                     continue;
                 }
 

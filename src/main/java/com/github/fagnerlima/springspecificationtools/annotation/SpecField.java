@@ -28,7 +28,8 @@ public @interface SpecField {
     public SpecOperation operation() default SpecOperation.EQUAL;
 
     /**
-     * @return If {@code true} and the value is {@code null}, the condition IS NULL will be included.
+     * @return If {@code true} and the value is {@code null}, the condition IS NULL will be included. A blank
+     *         {@code String} value is still ignored.
      */
     public boolean canBeNull() default false;
 

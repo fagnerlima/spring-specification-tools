@@ -4,7 +4,7 @@
 
   <groupId>com.github.fagnerlima</groupId>
   <artifactId>spring-specification-tools</artifactId>
-  <version>0.3.1</version>
+  <version>${revision}</version>
   <packaging>jar</packaging>
 
   <name>Spring Specification Tools</name>
@@ -14,77 +14,218 @@
   <licenses>
     <license>
       <name>MIT License</name>
-      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <url>https://opensource.org/license/mit</url>
     </license>
   </licenses>
 
   <developers>
     <developer>
       <name>Fagner Lima</name>
-      <email>contato@fagnerlima.pro.br</email>
+      <email>contato@fagnerlima.com</email>
       <organization>com.github.fagnerlima</organization>
       <organizationUrl>https://github.com/fagnerlima</organizationUrl>
     </developer>
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/fagnerlima/spring-specification-tools.git</connection>
-    <developerConnection>scm:git:ssh://github.com:fagnerlima/spring-specification-tools.git</developerConnection>
-    <url>https://github.com/fagnerlima/tree/master</url>
+    <connection>scm:git:https://github.com/fagnerlima/spring-specification-tools.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/fagnerlima/spring-specification-tools.git</developerConnection>
+    <url>https://github.com/fagnerlima/spring-specification-tools</url>
   </scm>
 
+  <issueManagement>
+    <system>GitHub Issues</system>
+    <url>https://github.com/fagnerlima/spring-specification-tools/issues</url>
+  </issueManagement>
+
   <properties>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <!-- Overridden by the release workflow with the version from the Git tag (-Drevision=X.Y.Z). -->
+    <revision>1.0.0-SNAPSHOT</revision>
+
+    <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <apache-commons-lang3.version>3.10</apache-commons-lang3.version>
-    <javax-persistence-api.version>2.2</javax-persistence-api.version>
-    <junit-jupiter-api.version>5.6.2</junit-jupiter-api.version>
-    <spring-framework.version>2.3.1.RELEASE</spring-framework.version>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <!-- Only manages versions at build time; the consumer's own Spring Boot BOM decides the runtime versions. -->
+    <spring-boot.version>4.1.2</spring-boot.version>
+
+    <central-publishing-maven-plugin.version>0.12.0</central-publishing-maven-plugin.version>
+    <flatten-maven-plugin.version>1.8.0</flatten-maven-plugin.version>
+    <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
+    <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+    <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
+    <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+    <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+    <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
+    <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
+    <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+    <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+    <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+    <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
+    <!--
+      Provided by the consuming application (e.g. spring-boot-starter-data-jpa), so this library
+      never forces its own Spring Data / Jakarta Persistence versions onto the runtime classpath.
+    -->
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-jpa</artifactId>
-      <version>${spring-framework.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>javax.persistence-api</artifactId>
-      <version>${javax-persistence-api.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>${apache-commons-lang3.version}</version>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>${junit-jupiter-api.version}</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
-
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${maven-clean-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${maven-resources-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven-surefire-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${maven-jar-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>${maven-install-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${maven-deploy-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>${maven-gpg-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.sonatype.central</groupId>
+          <artifactId>central-publishing-maven-plugin</artifactId>
+          <version>${central-publishing-maven-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>${maven-enforcer-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>enforce-build-environment</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[21,)</version>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>[3.9,)</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>${flatten-maven-plugin.version}</version>
+        <configuration>
+          <flattenMode>ossrh</flattenMode>
+          <pomElements>
+            <issueManagement>keep</issueManagement>
+          </pomElements>
+          <updatePomFile>true</updatePomFile>
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>flatten-clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.2.1</version>
+        <version>${maven-source-plugin.version}</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -97,9 +238,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
+        <version>${maven-javadoc-plugin.version}</version>
         <configuration>
-          <source>8</source>
+          <doclint>all,-missing</doclint>
+          <failOnWarnings>true</failOnWarnings>
         </configuration>
         <executions>
           <execution>
@@ -110,31 +252,49 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.7</version>
-        <extensions>true</extensions>
-        <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>true</autoReleaseAfterClose>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <!--
+      Used only by the release workflow: signs the artifacts and publishes them to Maven Central
+      through the Central Portal. Requires the MAVEN_GPG_KEY and MAVEN_GPG_PASSPHRASE environment
+      variables and a "central" server with a Central Portal user token in settings.xml.
+    -->
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <configuration>
+              <signer>bc</signer>
+            </configuration>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>true</autoPublish>
+              <waitUntil>published</waitUntil>
+              <!-- Seconds to wait for the deployment to be published (the plugin's minimum). -->
+              <waitMaxTime>1800</waitMaxTime>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

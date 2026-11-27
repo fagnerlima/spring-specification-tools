@@ -8,3 +8,13 @@
 .settings
 .springBeans
 .sts4-cache
+
+### Maven ###
+.flattened-pom.xml
+
+### IntelliJ IDEA ###
+.idea
+*.iml
+
+### VS Code ###
+.vscode
